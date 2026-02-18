@@ -68,9 +68,14 @@ export async function fetchPlaylist(playlistId: string): Promise<Song[]> {
         continue;
       }
 
+      // Channel title often has " - Topic" suffix from YouTube Music auto-channels
+      const rawArtist = item.snippet.videoOwnerChannelTitle ?? "";
+      const artist = rawArtist.replace(/ - Topic$/, "").trim();
+
       songs.push({
         videoId: item.snippet.resourceId.videoId,
         title,
+        artist,
         thumbnailUrl:
           item.snippet.thumbnails?.medium?.url ??
           item.snippet.thumbnails?.default?.url ??

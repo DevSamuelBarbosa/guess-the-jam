@@ -2,6 +2,7 @@
 
 export interface YouTubePlaylistItemSnippet {
   title: string;
+  videoOwnerChannelTitle?: string;
   thumbnails?: {
     default?: { url: string };
     medium?: { url: string };

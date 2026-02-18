@@ -13,6 +13,7 @@ declare global {
 export interface YouTubePlayerHandle {
   playSongSnippet: (videoId: string, durationSeconds: number) => void;
   stop: () => void;
+  resume: () => void;
 }
 
 interface UseYouTubePlayerOptions {
@@ -75,19 +76,27 @@ export function useYouTubePlayer({
     if (playerRef.current || !containerRef.current) return;
 
     playerRef.current = new window.YT.Player(containerRef.current, {
-      height: "1",
-      width: "1",
+      height: "225",
+      width: "400",
       playerVars: {
         autoplay: 0,
-        controls: 0,
-        disablekb: 1,
+        controls: 1,
+        disablekb: 0,
         fs: 0,
         modestbranding: 1,
         rel: 0,
         playsinline: 1,
       },
       events: {
-        onReady: () => setReady(true),
+        onReady: () => {
+          // Make the iframe responsive — fill its wrapper
+          const iframe = playerRef.current?.getIframe?.();
+          if (iframe) {
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+          }
+          setReady(true);
+        },
         onError: (e: YT.OnErrorEvent) => {
           onErrorRef.current?.(e.data);
         },
@@ -102,6 +111,14 @@ export function useYouTubePlayer({
     }
     try {
       playerRef.current?.pauseVideo();
+    } catch {
+      // Player might not be ready
+    }
+  }, []);
+
+  const resume = useCallback(() => {
+    try {
+      playerRef.current?.playVideo();
     } catch {
       // Player might not be ready
     }
@@ -152,6 +169,7 @@ export function useYouTubePlayer({
     ready,
     playSongSnippet,
     stop,
+    resume,
   } satisfies YouTubePlayerHandle & {
     containerRef: React.RefObject<HTMLDivElement | null>;
     ready: boolean;

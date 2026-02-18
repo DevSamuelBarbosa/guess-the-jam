@@ -22,21 +22,21 @@ function GameInner() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Hidden YouTube player — always mounted */}
-      <YouTubePlayer
-        ref={playerRef}
-        onSnippetEnd={() => dispatch({ type: "PLAYBACK_ENDED" })}
-        onError={(code) => {
-          // 101/150 = embed restricted → skip song
-          if (code === 101 || code === 150) {
-            dispatch({ type: "NEXT_ROUND" });
-          }
-        }}
-      />
-
       <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8 md:flex-row">
         {/* Main content */}
-        <main className="flex-1">
+        <main className="flex flex-1 flex-col items-center gap-6">
+          {/* YouTube player — visible during rounds, hidden otherwise */}
+          <YouTubePlayer
+            ref={playerRef}
+            visible={showScoreboard}
+            onSnippetEnd={() => dispatch({ type: "PLAYBACK_ENDED" })}
+            onError={(code) => {
+              // 101/150 = embed restricted → skip song
+              if (code === 101 || code === 150) {
+                dispatch({ type: "NEXT_ROUND" });
+              }
+            }}
+          />
           {state.phase === "setup" && <SetupPhase />}
           {state.phase === "countdown" && <CountdownPhase />}
           {(state.phase === "playing" ||

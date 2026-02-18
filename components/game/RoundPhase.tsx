@@ -72,6 +72,17 @@ export default function RoundPhase({ playerRef }: RoundPhaseProps) {
         </div>
       )}
 
+      {/* ─── Song info (visible to host during guessing) ─── */}
+      {(state.phase === "guessing" || state.phase === "round-result") && song && (
+        <div className="w-full max-w-md rounded-md border bg-muted/50 p-4 text-center">
+          <p className="text-xs text-muted-foreground mb-1">Answer (host only)</p>
+          <p className="text-base font-semibold">{song.title}</p>
+          {song.artist && (
+            <p className="text-sm text-muted-foreground">{song.artist}</p>
+          )}
+        </div>
+      )}
+
       {/* ─── Guessing phase ─── */}
       {state.phase === "guessing" && <TeamAnswerPanel />}
 
@@ -108,12 +119,15 @@ function RoundResult() {
         <div className="rounded-md border p-4 text-center">
           <p className="text-sm text-muted-foreground">The answer was:</p>
           <p className="text-lg font-semibold">{song.title}</p>
+          {song.artist && (
+            <p className="text-sm text-muted-foreground">{song.artist}</p>
+          )}
         </div>
       )}
 
       {!state.round?.revealed && (
         <button
-          className="text-sm underline text-muted-foreground hover:text-foreground"
+          className="text-sm underline text-muted-foreground hover:text-foreground cursor-pointer"
           onClick={() => dispatch({ type: "REVEAL_ANSWER" })}
         >
           Reveal answer
@@ -121,7 +135,7 @@ function RoundResult() {
       )}
 
       <button
-        className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
         onClick={() => dispatch({ type: "NEXT_ROUND" })}
       >
         Next Round →

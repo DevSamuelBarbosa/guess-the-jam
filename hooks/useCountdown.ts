@@ -38,20 +38,29 @@ export function useCountdown({
     setRunning(true);
   }, [from]);
 
+  // Track the latest remaining value in a ref so the interval callback
+  // can read it without depending on React state (avoids calling external
+  // callbacks inside a setState updater, which causes the
+  // "Cannot update a component while rendering a different component" error).
+  const remainingRef = useRef(remaining);
+  remainingRef.current = remaining;
+
   useEffect(() => {
     if (!running) return;
 
     intervalRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          stop();
-          onEndRef.current?.();
-          return 0;
-        }
-        onTickRef.current?.(next);
-        return next;
-      });
+      const next = remainingRef.current - 1;
+
+      if (next <= 0) {
+        setRemaining(0);
+        stop();
+        // Defer to avoid dispatching during another component's render
+        queueMicrotask(() => onEndRef.current?.());
+        return;
+      }
+
+      setRemaining(next);
+      queueMicrotask(() => onTickRef.current?.(next));
     }, 1000);
 
     return () => {

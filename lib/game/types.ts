@@ -19,6 +19,7 @@ export interface Team {
 export interface Song {
   videoId: string;
   title: string;
+  artist: string;
   thumbnailUrl: string;
 }
 
