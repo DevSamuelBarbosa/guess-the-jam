@@ -98,10 +98,48 @@ export default function RoundPhase({ playerRef }: RoundPhaseProps) {
 function RoundResult() {
   const { state, dispatch } = useGame();
   const song = currentSong(state);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const scoringTeam = state.round?.answeringTeamId
     ? state.teams.find((t) => t.id === state.round!.answeringTeamId)
     : null;
+
+  function handleNextRound() {
+    setCountdown(3);
+
+    timerRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === null) return null;
+        const next = prev - 1;
+        if (next <= 0) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = null;
+          queueMicrotask(() => dispatch({ type: "NEXT_ROUND" }));
+          return 0;
+        }
+        return next;
+      });
+    }, 1000);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  // Show countdown overlay
+  if (countdown !== null && countdown > 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 py-8">
+        <p className="text-lg text-muted-foreground">Next round in…</p>
+        <span className="text-7xl font-bold tabular-nums animate-pulse">
+          {countdown}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center gap-4 py-4">
@@ -136,7 +174,7 @@ function RoundResult() {
 
       <button
         className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
-        onClick={() => dispatch({ type: "NEXT_ROUND" })}
+        onClick={handleNextRound}
       >
         Next Round →
       </button>

@@ -131,7 +131,6 @@ export default function SetupPhase() {
               <Button
                 onClick={handleAddTeam}
                 disabled={!teamName.trim()}
-                variant="secondary"
               >
                 Add
               </Button>

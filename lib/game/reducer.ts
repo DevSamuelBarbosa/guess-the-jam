@@ -18,7 +18,8 @@ export type GameAction =
   | { type: "MARK_INCORRECT" }
   | { type: "REVEAL_ANSWER" }
   | { type: "NEXT_ROUND" }
-  | { type: "RESET_GAME" };
+  | { type: "RESET_GAME" }
+  | { type: "RESTORE_STATE"; state: GameState };
 
 // ─── Initial state ───
 
@@ -195,6 +196,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case "RESET_GAME":
       return { ...initialGameState };
+
+    case "RESTORE_STATE":
+      return action.state;
 
     default:
       return state;

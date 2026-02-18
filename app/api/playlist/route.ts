@@ -2,6 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import { parsePlaylistUrl } from "@/lib/youtube/parse-playlist-url";
 import { fetchPlaylist } from "@/lib/youtube/fetch-playlist";
 import { MIN_SONGS } from "@/lib/game/constants";
+import type { Song } from "@/lib/game/types";
+
+// ---------------------------------------------------------------------------
+// In-memory cache: playlistId → { songs, timestamp }
+// Entries expire after CACHE_TTL_MS so updated playlists are eventually picked up.
+// ---------------------------------------------------------------------------
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+interface CacheEntry {
+  songs: Song[];
+  timestamp: number;
+}
+
+const cache = new Map<string, CacheEntry>();
+
+function getCached(playlistId: string): Song[] | null {
+  const entry = cache.get(playlistId);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    cache.delete(playlistId);
+    return null;
+  }
+  return entry.songs;
+}
+
+function setCache(playlistId: string, songs: Song[]) {
+  cache.set(playlistId, { songs, timestamp: Date.now() });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +52,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check cache first
+    const cached = getCached(playlistId);
+    if (cached) {
+      return NextResponse.json({ songs: cached, cached: true });
+    }
+
     const songs = await fetchPlaylist(playlistId);
 
     if (songs.length < MIN_SONGS) {
@@ -34,6 +68,8 @@ export async function POST(request: NextRequest) {
         { status: 422 }
       );
     }
+
+    setCache(playlistId, songs);
 
     return NextResponse.json({ songs });
   } catch (err) {

@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Guess the Jam",
   description: "A music guessing party game powered by YouTube playlists.",
+  icons: {
+    icon: "/logo-gtj.png",
+    apple: "/logo-gtj.png",
+  },
 };
 
 export default function RootLayout({
