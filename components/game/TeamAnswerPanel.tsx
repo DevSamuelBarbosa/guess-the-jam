@@ -5,11 +5,13 @@ import { useGame } from "@/hooks/useGameReducer";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { teamsAvailableToGuess } from "@/lib/game/selectors";
+import { useI18n } from "@/lib/i18n";
 
 const ANSWER_TIME_LIMIT = 15; // seconds
 
 export default function TeamAnswerPanel() {
   const { state, dispatch } = useGame();
+  const { t } = useI18n();
   const [timeLeft, setTimeLeft] = useState(ANSWER_TIME_LIMIT);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -58,7 +60,7 @@ export default function TeamAnswerPanel() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="text-lg font-medium">Which team is answering?</p>
+      <p className="text-lg font-medium">{t.whichTeamAnswering}</p>
 
       <div className="flex flex-wrap justify-center gap-3">
         {state.teams.map((team) => {
@@ -87,7 +89,7 @@ export default function TeamAnswerPanel() {
           {/* Timer bar */}
           <div className="w-full space-y-1">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Time left</span>
+              <span>{t.timeLeft}</span>
               <span className={timeLeft <= 5 ? "font-bold text-destructive" : "tabular-nums"}>
                 {timeLeft}s
               </span>
@@ -105,7 +107,7 @@ export default function TeamAnswerPanel() {
               onClick={() => dispatch({ type: "MARK_CORRECT" })}
               className="bg-green-600 hover:bg-green-700 text-white min-w-[120px]"
             >
-              Correct ✓
+              {t.correct}
             </Button>
             <Button
               size="lg"
@@ -113,7 +115,7 @@ export default function TeamAnswerPanel() {
               onClick={() => dispatch({ type: "MARK_INCORRECT" })}
               className="min-w-[120px]"
             >
-              Wrong ✗
+              {t.wrong}
             </Button>
           </div>
         </div>
@@ -121,7 +123,7 @@ export default function TeamAnswerPanel() {
 
       {available.length === 0 && !selected && (
         <p className="text-muted-foreground">
-          All teams attempted. No one got it!
+          {t.allTeamsAttempted}
         </p>
       )}
     </div>

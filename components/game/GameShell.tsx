@@ -23,8 +23,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CircleHelp, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { CircleHelp, Globe, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/ui/theme-toggle";
+import { I18nProvider, useI18n } from "@/lib/i18n";
 import SetupPhase from "./SetupPhase";
 import CountdownPhase from "./CountdownPhase";
 import RoundPhase from "./RoundPhase";
@@ -35,6 +36,7 @@ function GameInner() {
   const { state, dispatch, hydrated } = useGame();
   const playerRef = useRef<YouTubePlayerRef | null>(null);
   const { dark, mounted, toggle } = useTheme();
+  const { t, toggleLocale } = useI18n();
   const [helpOpen, setHelpOpen] = useState(false);
   const [exitOpen, setExitOpen] = useState(false);
 
@@ -79,12 +81,16 @@ function GameInner() {
             {mounted && (
               <DropdownMenuItem onSelect={toggle} className="cursor-pointer">
                 {dark ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
-                {dark ? "Light mode" : "Dark mode"}
+                {dark ? t.lightMode : t.darkMode}
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem onSelect={toggleLocale} className="cursor-pointer">
+              <Globe className="mr-2 h-4 w-4" />
+              {t.language}
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setHelpOpen(true)} className="cursor-pointer">
               <CircleHelp className="mr-2 h-4 w-4" />
-              How to play
+              {t.howToPlay}
             </DropdownMenuItem>
             {isInMatch && (
               <>
@@ -94,7 +100,7 @@ function GameInner() {
                   className="text-destructive focus:text-destructive cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Exit Match
+                  {t.exitMatch}
                 </DropdownMenuItem>
               </>
             )}
@@ -106,30 +112,30 @@ function GameInner() {
       <AlertDialog open={helpOpen} onOpenChange={setHelpOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>How to play 🎶</AlertDialogTitle>
+            <AlertDialogTitle>{t.helpTitle}</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">1. Set up the match</strong><br />
-                  Paste a YouTube playlist link, set the number of teams, and choose the snippet duration for each song.
+                  <strong className="text-foreground">{t.helpStep1Title}</strong><br />
+                  {t.helpStep1Desc}
                 </p>
                 <p>
-                  <strong className="text-foreground">2. Listen to the snippet</strong><br />
-                  Each round, a short snippet of a song will play. Teams must pay attention and try to recognize the song from just that snippet!
+                  <strong className="text-foreground">{t.helpStep2Title}</strong><br />
+                  {t.helpStep2Desc}
                 </p>
                 <p>
-                  <strong className="text-foreground">3. Guess the song</strong><br />
-                  After the snippet, teams get a chance to answer. The host picks which team answers first. The team has 15 seconds to discuss and give their answer. If they get it wrong, other teams can try.
+                  <strong className="text-foreground">{t.helpStep3Title}</strong><br />
+                  {t.helpStep3Desc}
                 </p>
                 <p>
-                  <strong className="text-foreground">4. Score and win</strong><br />
-                  The team that guesses correctly earns points. The first team to reach the target score wins the match!
+                  <strong className="text-foreground">{t.helpStep4Title}</strong><br />
+                  {t.helpStep4Desc}
                 </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Got it!</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t.helpGotIt}</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -138,18 +144,18 @@ function GameInner() {
       <AlertDialog open={exitOpen} onOpenChange={setExitOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Exit match?</AlertDialogTitle>
+            <AlertDialogTitle>{t.exitMatchTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to leave the current match? Your progress will be lost.
+              {t.exitMatchDesc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleLeaveMatch}
               className="bg-destructive text-white hover:bg-destructive/90 cursor-pointer"
             >
-              Exit Match
+              {t.exitMatch}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -184,7 +190,7 @@ function GameInner() {
         {showScoreboard && (
           <aside className="w-full md:w-64 shrink-0">
             <h3 className="mb-3 text-sm font-medium text-muted-foreground">
-              Scoreboard
+              {t.scoreboard}
             </h3>
             <TeamScoreboard />
           </aside>
@@ -196,8 +202,10 @@ function GameInner() {
 
 export default function GameShell() {
   return (
-    <GameProvider>
-      <GameInner />
-    </GameProvider>
+    <I18nProvider>
+      <GameProvider>
+        <GameInner />
+      </GameProvider>
+    </I18nProvider>
   );
 }

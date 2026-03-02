@@ -4,15 +4,17 @@ import { useGame } from "@/hooks/useGameReducer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import TeamScoreboard from "./TeamScoreboard";
+import { useI18n } from "@/lib/i18n";
 
 export default function GameOverPhase() {
   const { state, dispatch } = useGame();
+  const { t } = useI18n();
 
-  const winnerTeam = state.teams.find((t) => t.id === state.winnerId);
+  const winnerTeam = state.teams.find((team) => team.id === state.winnerId);
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
-      <h2 className="text-4xl font-extrabold tracking-tight">Game Over!</h2>
+      <h2 className="text-4xl font-extrabold tracking-tight">{t.gameOver}</h2>
 
       {winnerTeam && (
         <Card className="w-full max-w-sm text-center">
@@ -20,7 +22,7 @@ export default function GameOverPhase() {
             <span className="text-5xl">🏆</span>
             <p className="text-2xl font-bold">{winnerTeam.name}</p>
             <p className="text-muted-foreground">
-              Won with {winnerTeam.score} points!
+              {t.wonWith(winnerTeam.score)}
             </p>
           </CardContent>
         </Card>
@@ -28,7 +30,7 @@ export default function GameOverPhase() {
 
       <div className="w-full max-w-sm">
         <h3 className="mb-3 text-center text-sm font-medium text-muted-foreground">
-          Final Scores
+          {t.finalScores}
         </h3>
         <TeamScoreboard />
       </div>
@@ -38,14 +40,14 @@ export default function GameOverPhase() {
           size="lg"
           onClick={() => dispatch({ type: "START_GAME" })}
         >
-          Play again with the same playlist
+          {t.playAgainSamePlaylist}
         </Button>
         <Button
           size="lg"
           variant="outline"
           onClick={() => dispatch({ type: "RESET_GAME" })}
         >
-          Play again with a new playlist
+          {t.playAgainNewPlaylist}
         </Button>
       </div>
     </div>

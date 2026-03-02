@@ -16,9 +16,11 @@ import {
 } from "@/components/ui/select";
 import { MAX_TEAMS, MIN_SONGS } from "@/lib/game/constants";
 import type { PlaybackDuration, Song } from "@/lib/game/types";
+import { useI18n } from "@/lib/i18n";
 
 export default function SetupPhase() {
   const { state, dispatch } = useGame();
+  const { t } = useI18n();
 
   // ─── Playlist loading ───
   const [playlistUrl, setPlaylistUrl] = useState("");
@@ -80,24 +82,24 @@ export default function SetupPhase() {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       <h1 className="text-center text-3xl font-bold tracking-tight">
-        🎵 Guess the Jam
+        {t.guessTheJam}
       </h1>
 
       {/* ─── Playlist ─── */}
       <Card>
         <CardHeader>
-          <CardTitle>Playlist</CardTitle>
+          <CardTitle>{t.playlist}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <div className="flex gap-2">
             <Input
-              placeholder="Paste a YouTube playlist link…"
+              placeholder={t.playlistPlaceholder}
               value={playlistUrl}
               onChange={(e) => setPlaylistUrl(e.target.value)}
               disabled={loading}
             />
             <Button onClick={handleLoadPlaylist} disabled={loading || !playlistUrl.trim()}>
-              {loading ? "Loading…" : "Load"}
+              {loading ? t.loading : t.load}
             </Button>
           </div>
 
@@ -107,7 +109,7 @@ export default function SetupPhase() {
 
           {hasSongs && (
             <Badge variant="secondary" className="w-fit">
-              ✓ {state.songs.length} songs loaded
+              {t.songsLoaded(state.songs.length)}
             </Badge>
           )}
         </CardContent>
@@ -116,13 +118,13 @@ export default function SetupPhase() {
       {/* ─── Teams ─── */}
       <Card>
         <CardHeader>
-          <CardTitle>Teams</CardTitle>
+          <CardTitle>{t.teams}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {state.teams.length < MAX_TEAMS && (
             <div className="flex gap-2">
               <Input
-                placeholder="Team name…"
+                placeholder={t.teamPlaceholder}
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -132,14 +134,14 @@ export default function SetupPhase() {
                 onClick={handleAddTeam}
                 disabled={!teamName.trim()}
               >
-                Add
+                {t.add}
               </Button>
             </div>
           )}
 
           {state.teams.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              Add at least 1 team to start.
+              {t.addTeamHint}
             </p>
           )}
 
@@ -168,11 +170,11 @@ export default function SetupPhase() {
       {/* ─── Duration ─── */}
       <Card>
         <CardHeader>
-          <CardTitle>Playback Duration</CardTitle>
+          <CardTitle>{t.playbackDuration}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
-            <Label htmlFor="duration">Seconds per song:</Label>
+            <Label htmlFor="duration">{t.secondsPerSong}</Label>
             <Select
               value={String(state.playbackDuration)}
               onValueChange={(v) =>
@@ -202,7 +204,7 @@ export default function SetupPhase() {
         disabled={!canStart}
         onClick={() => dispatch({ type: "START_GAME" })}
       >
-        Start Game
+        {t.startGame}
       </Button>
     </div>
   );
