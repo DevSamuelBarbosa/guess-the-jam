@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "gtj-theme";
 
-export default function ThemeToggle() {
+export function useTheme() {
   const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // On mount, read stored preference (or system preference)
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "dark") {
@@ -19,7 +18,6 @@ export default function ThemeToggle() {
       setDark(false);
       document.documentElement.classList.remove("dark");
     } else {
-      // Fall back to system preference
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       setDark(prefersDark);
       document.documentElement.classList.toggle("dark", prefersDark);
@@ -34,7 +32,12 @@ export default function ThemeToggle() {
     localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
   }
 
-  // Avoid hydration mismatch — render nothing until mounted
+  return { dark, mounted, toggle };
+}
+
+export default function ThemeToggle() {
+  const { dark, mounted, toggle } = useTheme();
+
   if (!mounted) return null;
 
   return (

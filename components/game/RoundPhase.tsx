@@ -74,11 +74,17 @@ export default function RoundPhase({ playerRef }: RoundPhaseProps) {
 
       {/* ─── Song info (visible to host during guessing) ─── */}
       {(state.phase === "guessing" || state.phase === "round-result") && song && (
-        <div className="w-full max-w-md rounded-md border bg-muted/50 p-4 text-center">
-          <p className="text-xs text-muted-foreground mb-1">Answer (host only)</p>
-          <p className="text-base font-semibold">{song.title}</p>
+        <div className="w-full max-w-md rounded-md border bg-muted/50 p-4">
+          <p className="text-xs text-muted-foreground mb-2 text-center">Answer</p>
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="text-xs text-muted-foreground shrink-0">Song:</span>
+            <span className="text-sm font-semibold text-right">{song.title}</span>
+          </div>
           {song.artist && (
-            <p className="text-sm text-muted-foreground">{song.artist}</p>
+            <div className="flex items-baseline justify-between gap-4 mt-2">
+              <span className="text-xs text-muted-foreground shrink-0">Artist/band:</span>
+              <span className="text-sm font-semibold text-right">{song.artist}</span>
+            </div>
           )}
         </div>
       )}
@@ -151,16 +157,6 @@ function RoundResult() {
         <p className="text-xl font-bold text-muted-foreground">
           Nobody got it this round.
         </p>
-      )}
-
-      {state.round?.revealed && song && (
-        <div className="rounded-md border p-4 text-center">
-          <p className="text-sm text-muted-foreground">The answer was:</p>
-          <p className="text-lg font-semibold">{song.title}</p>
-          {song.artist && (
-            <p className="text-sm text-muted-foreground">{song.artist}</p>
-          )}
-        </div>
       )}
 
       {!state.round?.revealed && (

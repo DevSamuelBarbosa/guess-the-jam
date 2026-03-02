@@ -33,13 +33,21 @@ export default function GameOverPhase() {
         <TeamScoreboard />
       </div>
 
-      <Button
-        size="lg"
-        variant="outline"
-        onClick={() => dispatch({ type: "RESET_GAME" })}
-      >
-        Play Again
-      </Button>
+      <div className="flex flex-col gap-3 items-center">
+        <Button
+          size="lg"
+          onClick={() => dispatch({ type: "START_GAME" })}
+        >
+          Play again with the same playlist
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={() => dispatch({ type: "RESET_GAME" })}
+        >
+          Play again with a new playlist
+        </Button>
+      </div>
     </div>
   );
 }
