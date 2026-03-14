@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parsePlaylistUrl } from "@/lib/youtube/parse-playlist-url";
 import { fetchPlaylist } from "@/lib/youtube/fetch-playlist";
+import { YouTubeQuotaGuardError } from "@/lib/youtube/quota";
 import { MIN_SONGS } from "@/lib/game/constants";
 import type { Song } from "@/lib/game/types";
 
@@ -73,6 +74,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ songs });
   } catch (err) {
+    if (err instanceof YouTubeQuotaGuardError) {
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
+
     const message =
       err instanceof Error ? err.message : "Unknown server error.";
     return NextResponse.json({ error: message }, { status: 500 });

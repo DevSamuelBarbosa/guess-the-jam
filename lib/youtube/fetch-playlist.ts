@@ -1,5 +1,10 @@
 import type { Song } from "@/lib/game/types";
 import type { YouTubePlaylistResponse } from "./types";
+import {
+  assertQuotaAvailable,
+  registerQuotaUsage,
+  YouTubeQuotaGuardError,
+} from "./quota";
 
 const YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3";
 const MAX_PAGES = 5; // Safety cap: 5 pages × 50 = 250 items max
@@ -19,6 +24,8 @@ export async function fetchPlaylist(playlistId: string): Promise<Song[]> {
   let page = 0;
 
   do {
+    assertQuotaAvailable(1);
+
     const params = new URLSearchParams({
       part: "snippet,status",
       playlistId,
@@ -35,13 +42,17 @@ export async function fetchPlaylist(playlistId: string): Promise<Song[]> {
       { next: { revalidate: 0 } } // never cache
     );
 
+    registerQuotaUsage(1);
+
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       const reason =
         body?.error?.errors?.[0]?.reason ?? `HTTP ${res.status}`;
 
       if (reason === "quotaExceeded") {
-        throw new Error("YouTube API quota exceeded. Try again later.");
+        throw new YouTubeQuotaGuardError(
+          "YouTube API quota exceeded. Try again later."
+        );
       }
       if (res.status === 404) {
         throw new Error("Playlist not found. Check the URL.");

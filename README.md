@@ -42,7 +42,13 @@ Create a `.env.local` file in the project root:
 
 ```env
 YOUTUBE_API_KEY=your_youtube_data_api_key_here
+YOUTUBE_DAILY_QUOTA_LIMIT=10000
+YOUTUBE_DAILY_QUOTA_SOFT_STOP_RATIO=0.9
 ```
+
+`YOUTUBE_DAILY_QUOTA_LIMIT` and `YOUTUBE_DAILY_QUOTA_SOFT_STOP_RATIO` are optional.
+They enable a server-side safety stop before the YouTube Data API daily quota is exhausted.
+Example: with `0.9`, the app stops new playlist loads after ~90% of the daily quota.
 
 ### Running Locally
 
