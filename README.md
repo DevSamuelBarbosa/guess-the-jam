@@ -29,7 +29,7 @@ A local party music guessing game built with Next.js. One host screen, multiple 
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/guess-the-jam.git
+git clone https://github.com/DevSamuelBarbosa/guess-the-jam.git
 cd guess-the-jam
 
 # Install dependencies
