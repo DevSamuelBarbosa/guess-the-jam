@@ -92,15 +92,3 @@ lib/
 | `npm run build` | Create a production build |
 | `npm start` | Run the production server |
 | `npm run lint` | Run ESLint |
-
-## Deployment
-
-Deploy easily on [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme):
-
-1. Push the repo to GitHub.
-2. Import the project on Vercel.
-3. Add the `YOUTUBE_API_KEY` environment variable in the Vercel dashboard.
-
-## License
-
-This project is private and not currently licensed for redistribution.
